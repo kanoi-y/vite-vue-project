@@ -5,16 +5,45 @@ export default {
       title: 'My New Vue Title',
       message: 'Welcome to Vue',
       isRed: true,
-      user: {
-        firstName: 'John',
-        lastName: 'Smith',
+      input: {
+        firstName: '',
+        lastName: '',
         isMember: true,
       },
+      users: [
+        {
+          firstName: 'John',
+          lastName: 'Smith',
+          isMember: true,
+        },
+        {
+          firstName: 'Taro',
+          lastName: 'Shinjuku',
+          isMember: false,
+        },
+        {
+          firstName: 'Hanako',
+          lastName: 'Shibuya',
+          isMember: true,
+        },
+      ],
     }
   },
-  computed: {
-    fullName() {
-      return this.user.firstName + ' ' + this.user.lastName
+  methods: {
+    addUser() {
+      if (
+        this.input.firstName.trim() === '' ||
+        this.input.lastName.trim() === ''
+      ) {
+        alert('姓、または名前が空白だと登録することが出来ません')
+        return
+      }
+      this.users.push(this.input)
+      this.input = {
+        firstName: '',
+        lastName: '',
+        isMember: true,
+      }
     },
   },
 }
@@ -22,14 +51,14 @@ export default {
 
 <template>
   <h1 :title="message" :class="{ red: isRed }">{{ title }}</h1>
-  <h2>{{ fullName }}さんのデータ</h2>
-  <p>Name: {{ fullName }}</p>
-  <p v-if="user.isMember">メンバーです</p>
-  <p v-else>メンバーではありません</p>
+  <input type="text" v-model="input.firstName" />
+  <input type="text" v-model="input.lastName" />
+  <input type="checkbox" v-model="input.isMember" />
+  <button v-on:click="addUser">ユーザー追加</button>
+  <h2>ユーザーのデータ</h2>
+  <div v-for="user in users">
+    <p>Name: {{ user.firstName + ' ' + user.lastName }}</p>
+    <p v-if="user.isMember">メンバーです</p>
+    <p v-else>メンバーではありません</p>
+  </div>
 </template>
-
-<style>
-.red {
-  color: red;
-}
-</style>
