@@ -1,24 +1,30 @@
 <script>
+import TodoAdd from './components/TodoAdd.vue'
+import TodoList from './components/TodoList.vue'
+
 export default {
+  components: {
+    TodoAdd,
+    TodoList,
+  },
   data() {
     return {
-      inputText: '',
-      todos: [],
+      todos:
+        [
+          // { isDone: false, text: 'ダミーTodo' }
+        ],
     }
   },
   methods: {
-    addTodo() {
-      if (this.inputText.trim() === '') {
-        alert('ToDoが空白だと登録することが出来ません')
-        return
-      }
-      this.todos.push({ text: this.inputText, isChecked: false })
-      this.inputText = ''
-    },
-    deleteTodo() {
-      this.todos = this.todos.filter((todo) => {
-        return !todo.isChecked
+    addTodo(newTodoText) {
+      if (!newTodoText) return alert('文字を入力してください')
+      this.todos.push({
+        isDone: false,
+        text: newTodoText,
       })
+    },
+    clearDoneTodos() {
+      this.todos = this.todos.filter((todo) => !todo.isDone)
     },
   },
 }
@@ -26,17 +32,9 @@ export default {
 
 <template>
   <h1>My ToDo App</h1>
-  <input type="text" v-model="inputText" /><button @click="addTodo">追加</button
-  ><button @click="deleteTodo">完了済みを削除する</button>
-  <ul v-if="todos.length !== 0">
-    <li v-for="todo in todos">
-      <input type="checkbox" v-model="todo.isChecked" /><span
-        :class="{ 'todo-done': todo.isChecked }"
-        >{{ todo.text }}</span
-      >
-    </li>
-  </ul>
-  <p v-else>ToDoがまだありません！</p>
+  <TodoAdd @delete-done="clearDoneTodos" @add-todo="addTodo" />
+  <p v-if="todos.length === 0">ToDoがまだありません！</p>
+  <TodoList v-else :todos="todos" />
 </template>
 
 <style>
