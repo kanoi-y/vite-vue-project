@@ -1,38 +1,39 @@
 <script>
 import TodoAdd from '@/components/components/TodoAdd.vue'
 import TodoList from '@/components/components/TodoList.vue'
+import { useTodosStore } from '@/stores/todos'
+import { mapActions, mapStores } from 'pinia'
 
 export default {
   components: {
     TodoAdd,
     TodoList,
   },
-  data() {
-    return {
-      todos: [
-        //{ isDone: false, text: 'ToDoの文字列' }
-      ],
-    }
+  computed: {
+    ...mapStores(useTodosStore),
+    countDoneTodos() {
+      const store = useTodosStore()
+      return store.countDoneTodos
+    },
   },
   methods: {
-    addTodo(newTodoText) {
+    ...mapActions(useTodosStore, ['addTodo', 'clearDoneTodos']),
+    addNewTodo(newTodoText) {
       if (!newTodoText) return alert('文字を入力してください')
-      this.todos.push({
+      this.addTodo({
         isDone: false,
         text: newTodoText,
       })
-    },
-    clearDoneTodos() {
-      this.todos = this.todos.filter((todo) => !todo.isDone)
     },
   },
 }
 </script>
 
 <template>
-  <TodoAdd @delete-done="clearDoneTodos" @add-todo="addTodo" />
-  <p v-if="todos.length === 0">ToDoがまだありません！</p>
-  <TodoList v-else :todos="todos" />
+  <p>{{ countDoneTodos  }}</p>
+  <TodoAdd @delete-done="clearDoneTodos" @add-todo="addNewTodo" />
+  <p v-if="todosStore.todos.length === 0">ToDoがまだありません！</p>
+  <TodoList v-else :todos="todosStore.todos" />
 </template>
 
 <style>
